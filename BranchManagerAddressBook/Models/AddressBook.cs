@@ -1,22 +1,25 @@
 using System;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace RefactorThis.Models
 {
-    public class Customer
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
+    public class AddressBook
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public int PhoneNumber { get; set; }
+
+        public Guid CustomerId { get; set; }
+        public string Address { get; set; }
         [JsonIgnore] public bool IsNew { get; }
 
-        public Customer()
+        public AddressBook()
         {
             Id = Guid.NewGuid();
             IsNew = true;
         }
 
-        public Customer(Guid id)
+        public AddressBook(Guid id)
         {
             IsNew = true;
             using var conn = Helpers.NewConnection();
@@ -24,15 +27,15 @@ namespace RefactorThis.Models
             using var cmd = conn.CreateCommand();
             try
             {
-                cmd.CommandText = $"select * from Customer where id = '{id}' collate nocase";
+                cmd.CommandText = $"select * from AddressBook where id = '{id}' collate nocase";
 
                 var rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
                     IsNew = false;
                     Id = Guid.Parse(rdr["Id"].ToString());
-                    Name = rdr["Name"].ToString();
-                    PhoneNumber = int.Parse(rdr["PhoneNumber"].ToString());
+                    CustomerId = Guid.Parse(rdr["CustomerId"].ToString());
+                    Address = rdr["Address"].ToString();
                 }
             }
             catch (Exception e)
@@ -52,10 +55,9 @@ namespace RefactorThis.Models
             try
             {
                 cmd.CommandText = IsNew
-                    ? $"insert into Customer (id, name, phonenumber) values ('{Id}', '{Name}', '{PhoneNumber}')"
-                    : $"update Customer set name = '{Name}', phonenumber = '{PhoneNumber}' where id = '{Id}' collate nocase";
+                    ? $"insert into AddressBook (id, customerId, address) values ('{Id}', '{CustomerId}', '{Address}')"
+                    : $"update AddressBook set address = '{Address}' where id = '{Id}' collate nocase";
 
-                // conn.Open();
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (Exception e)
@@ -73,9 +75,6 @@ namespace RefactorThis.Models
 
         public int Delete()
         {
-            foreach (var address in new AddressBooks(Id).Items)
-                address.Delete();
-
             using var conn = Helpers.NewConnection();
             conn.Open();
             using var tran = conn.BeginTransaction();
@@ -84,7 +83,7 @@ namespace RefactorThis.Models
             var rowsAffected = 0;
             try
             {
-                cmd.CommandText = $"delete from Customer where id = '{Id}' collate nocase";
+                cmd.CommandText = $"delete from AddressBook where id = '{Id}' collate nocase";
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (Exception e)
