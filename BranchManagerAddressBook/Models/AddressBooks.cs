@@ -15,7 +15,7 @@ namespace BranchManagerAddressBook.Models
 
         public AddressBooks(Guid customerId)
         {
-            LoadAddressBooks($"where a.customerId = '{customerId}' collate nocase");
+            LoadAddressBooks($"where CustomerId = '{customerId}' collate nocase");
         }
 
         public AddressBooks(List<AddressBook> address)
