@@ -30,7 +30,7 @@ namespace BranchManagerAddressBook.Models
                 cmd.Parameters.Add(new SqliteParameter()
                 {
                     ParameterName = "@Id",
-                    Value = Id
+                    Value = id
                 });
 
                 var rdr = cmd.ExecuteReader();
