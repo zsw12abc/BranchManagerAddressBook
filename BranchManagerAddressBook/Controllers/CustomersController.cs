@@ -2,10 +2,10 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using RefactorThis.Auth;
-using RefactorThis.Models;
+using BranchManagerAddressBook.Auth;
+using BranchManagerAddressBook.Models;
 
-namespace RefactorThis.Controllers
+namespace BranchManagerAddressBook.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

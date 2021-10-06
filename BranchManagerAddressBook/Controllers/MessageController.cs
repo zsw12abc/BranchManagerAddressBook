@@ -1,7 +1,7 @@
 using System;
-using RefactorThis.Models;
+using BranchManagerAddressBook.Models;
 
-namespace RefactorThis.Controllers
+namespace BranchManagerAddressBook.Controllers
 {
     public class MessageController
     {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace RefactorThis
+namespace BranchManagerAddressBook
 {
     public class Program
     {

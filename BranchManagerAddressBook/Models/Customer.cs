@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace RefactorThis.Models
+namespace BranchManagerAddressBook.Models
 {
     public class Customer
     {

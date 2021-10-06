@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
-namespace RefactorThis.Models
+namespace BranchManagerAddressBook.Models
 {
     [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
     public class Customers

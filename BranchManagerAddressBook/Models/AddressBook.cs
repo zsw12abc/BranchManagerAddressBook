@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace RefactorThis.Models
+namespace BranchManagerAddressBook.Models
 {
     [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
     public class AddressBook
