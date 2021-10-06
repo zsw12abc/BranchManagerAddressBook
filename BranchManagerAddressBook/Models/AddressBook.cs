@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 
 namespace BranchManagerAddressBook.Models
@@ -30,7 +31,13 @@ namespace BranchManagerAddressBook.Models
             {
                 // cmd.CommandText = $"select * from AddressBook where id = '{id}' collate nocase";
                 cmd.CommandText = $"select a.Id, a.CustomerId, c.Name, c.PhoneNumber, a.Address from AddressBook a " +
-                                  $"inner join Customer c on a.CustomerId = c.Id where a.Id = '{id}' collate nocase";
+                                  $"inner join Customer c on a.CustomerId = c.Id where a.Id = @Id collate nocase";
+
+                cmd.Parameters.Add(new SqliteParameter()
+                {
+                    ParameterName = "@Id",
+                    Value = Id
+                });
 
                 var rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -60,8 +67,26 @@ namespace BranchManagerAddressBook.Models
             try
             {
                 cmd.CommandText = IsNew
-                    ? $"insert into AddressBook (id, customerId, address) values ('{Id}', '{CustomerId}', '{Address}')"
-                    : $"update AddressBook set address = '{Address}' where id = '{Id}' collate nocase";
+                    ? $"insert into AddressBook (id, customerId, address) values (@Id, @CustomerId, @Address)"
+                    : $"update AddressBook set address = @Address where id = @Id collate nocase";
+
+                cmd.Parameters.Add(new SqliteParameter()
+                {
+                    ParameterName = "@Id",
+                    Value = Id
+                });
+                cmd.Parameters.Add(new SqliteParameter()
+                {
+                    ParameterName = "@CustomerId",
+                    Value = CustomerId
+                });
+                cmd.Parameters.Add(new SqliteParameter()
+                {
+                    ParameterName = "@Address",
+                    Value = Address,
+                    SqliteType = SqliteType.Text
+                });
+
 
                 rowsAffected = cmd.ExecuteNonQuery();
             }
@@ -88,7 +113,12 @@ namespace BranchManagerAddressBook.Models
             var rowsAffected = 0;
             try
             {
-                cmd.CommandText = $"delete from AddressBook where id = '{Id}' collate nocase";
+                cmd.CommandText = $"delete from AddressBook where id = @Id collate nocase";
+                cmd.Parameters.Add(new SqliteParameter()
+                {
+                    ParameterName = "@Id",
+                    Value = Id
+                });
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (Exception e)
