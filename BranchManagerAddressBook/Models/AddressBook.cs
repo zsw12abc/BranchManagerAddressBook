@@ -8,8 +8,9 @@ namespace RefactorThis.Models
     public class AddressBook
     {
         public Guid Id { get; set; }
-
         public Guid CustomerId { get; set; }
+        public string Name { get; set; }
+        public int PhoneNumber { get; set; }
         public string Address { get; set; }
         [JsonIgnore] public bool IsNew { get; }
 
@@ -27,7 +28,9 @@ namespace RefactorThis.Models
             using var cmd = conn.CreateCommand();
             try
             {
-                cmd.CommandText = $"select * from AddressBook where id = '{id}' collate nocase";
+                // cmd.CommandText = $"select * from AddressBook where id = '{id}' collate nocase";
+                cmd.CommandText = $"select a.Id, a.CustomerId, c.Name, c.PhoneNumber, a.Address from AddressBook a " +
+                                  $"inner join Customer c on a.CustomerId = c.Id where a.Id = '{id}' collate nocase";
 
                 var rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -35,6 +38,8 @@ namespace RefactorThis.Models
                     IsNew = false;
                     Id = Guid.Parse(rdr["Id"].ToString());
                     CustomerId = Guid.Parse(rdr["CustomerId"].ToString());
+                    Name = rdr["Name"].ToString();
+                    PhoneNumber = int.Parse(rdr["PhoneNumber"].ToString());
                     Address = rdr["Address"].ToString();
                 }
             }

@@ -6,7 +6,7 @@ namespace RefactorThis.Models
 {
     public class AddressBooks
     {
-        public List<AddressBook> Items { get; private set; }
+        public List<AddressBook> Address { get; private set; }
 
         public AddressBooks()
         {
@@ -18,14 +18,14 @@ namespace RefactorThis.Models
             LoadAddressBooks($"where customerId = '{customerId}' collate nocase");
         }
 
-        public AddressBooks(List<AddressBook> items)
+        public AddressBooks(List<AddressBook> address)
         {
-            this.Items = items;
+            this.Address = address;
         }
 
         private void LoadAddressBooks(string where)
         {
-            Items = new List<AddressBook>();
+            Address = new List<AddressBook>();
             using var conn = Helpers.NewConnection();
             conn.Open();
             using var cmd = conn.CreateCommand();
@@ -37,7 +37,7 @@ namespace RefactorThis.Models
                 while (rdr.Read())
                 {
                     var id = Guid.Parse(rdr.GetString(0));
-                    Items.Add(new AddressBook(id));
+                    Address.Add(new AddressBook(id));
                 }
             }
             catch (Exception e)

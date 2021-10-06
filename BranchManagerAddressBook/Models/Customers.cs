@@ -7,7 +7,7 @@ namespace RefactorThis.Models
     [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
     public class Customers
     {
-        public List<Customer> Items { get; private set; }
+        public List<Customer> Contact { get; private set; }
 
         public Customers()
         {
@@ -19,14 +19,14 @@ namespace RefactorThis.Models
             LoadCustomers($"where lower(name) like '%{name.ToLower()}%'");
         }
 
-        public Customers(List<Customer> items)
+        public Customers(List<Customer> contact)
         {
-            this.Items = items;
+            this.Contact = contact;
         }
 
         private void LoadCustomers(string where)
         {
-            Items = new List<Customer>();
+            Contact = new List<Customer>();
 
             using var conn = Helpers.NewConnection();
             conn.Open();
@@ -38,7 +38,7 @@ namespace RefactorThis.Models
                 while (rdr.Read())
                 {
                     var id = Guid.Parse(rdr.GetString(0));
-                    Items.Add(new Customer(id));
+                    Contact.Add(new Customer(id));
                 }
             }
             catch (Exception e)

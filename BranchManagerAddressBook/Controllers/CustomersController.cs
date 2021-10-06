@@ -49,7 +49,7 @@ namespace RefactorThis.Controllers
             var found = _cache.TryGetValue("Customers", out Customers customers);
             if (found)
             {
-                var items = customers.Items.Where(x => x.Name.ToLower().Contains(name.ToLower()));
+                var items = customers.Contact.Where(x => x.Name.ToLower().Contains(name.ToLower()));
                 if (items.Any())
                 {
                     return new Customers(items.ToList());
@@ -57,7 +57,7 @@ namespace RefactorThis.Controllers
             }
 
             customers = new Customers(name);
-            if (customers.Items.Any(customer => customer.IsNew))
+            if (customers.Contact.Any(customer => customer.IsNew))
             {
                 throw new Exception($"Customers named {name} should not be New");
             }
@@ -72,7 +72,7 @@ namespace RefactorThis.Controllers
             var found = _cache.TryGetValue("Customers", out Customers customers);
             if (found)
             {
-                var item = customers.Items.Find(x => x.Id == id);
+                var item = customers.Contact.Find(x => x.Id == id);
                 if (item != null)
                 {
                     return item;
@@ -92,7 +92,7 @@ namespace RefactorThis.Controllers
             var found = _cache.TryGetValue("Customers", out Customers customers);
             if (found)
             {
-                customers.Items.Add(customer);
+                customers.Contact.Add(customer);
                 _cache.Set("Customers", customers, new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromMinutes(5)));
             }
@@ -146,15 +146,15 @@ namespace RefactorThis.Controllers
                 var found = _cache.TryGetValue("Customers", out Customers customers);
                 if (found)
                 {
-                    var customerUpdated = customers.Items.Find(customer => customer.Id == id);
+                    var customerUpdated = customers.Contact.Find(customer => customer.Id == id);
                     if (customerUpdated != null)
                     {
                         customerUpdated.Name = customer.Name;
                         customerUpdated.PhoneNumber = customer.PhoneNumber;
-                        var removed = customers.Items.Remove(new Customer(id));
+                        var removed = customers.Contact.Remove(new Customer(id));
                         if (removed)
                         {
-                            customers.Items.Add(customerUpdated);
+                            customers.Contact.Add(customerUpdated);
                             _cache.Set("Customers", customers, new MemoryCacheEntryOptions()
                                 .SetSlidingExpiration(TimeSpan.FromMinutes(5)));
                         }
@@ -187,10 +187,10 @@ namespace RefactorThis.Controllers
             var found = _cache.TryGetValue("Customers", out Customers customers);
             if (found)
             {
-                var customerUpdated = customers.Items.Find(customer => customer.Id == id);
+                var customerUpdated = customers.Contact.Find(customer => customer.Id == id);
                 if (customerUpdated != null)
                 {
-                    customers.Items.Remove(new Customer(id));
+                    customers.Contact.Remove(new Customer(id));
                     _cache.Set("Customers", customers, new MemoryCacheEntryOptions()
                         .SetSlidingExpiration(TimeSpan.FromMinutes(5)));
                 }
@@ -213,7 +213,7 @@ namespace RefactorThis.Controllers
             var found = _cache.TryGetValue("AddressBooks", out AddressBooks addressBooks);
             if (found)
             {
-                var result = addressBooks.Items.Where(item => item.CustomerId == customerId);
+                var result = addressBooks.Address.Where(item => item.CustomerId == customerId);
                 if (result.Any())
                 {
                     return new AddressBooks(result.ToList());

@@ -73,7 +73,7 @@ namespace RefactorThis.Models
 
         public int Delete()
         {
-            foreach (var address in new AddressBooks(Id).Items)
+            foreach (var address in new AddressBooks(Id).Address)
                 address.Delete();
 
             using var conn = Helpers.NewConnection();
