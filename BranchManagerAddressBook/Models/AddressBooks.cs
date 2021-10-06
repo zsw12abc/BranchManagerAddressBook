@@ -15,7 +15,7 @@ namespace RefactorThis.Models
 
         public AddressBooks(Guid customerId)
         {
-            LoadAddressBooks($"where customerId = '{customerId}' collate nocase");
+            LoadAddressBooks($"where a.customerId = '{customerId}' collate nocase");
         }
 
         public AddressBooks(List<AddressBook> address)

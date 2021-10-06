@@ -205,10 +205,10 @@ namespace RefactorThis.Controllers
                 return Ok($"Customer {customer.Name} with id = {id} never exist");
             }
         }
-        
+
         [ResponseCache(Duration = 3600)]
         [HttpGet("{customerId}/addressbooks")]
-        public AddressBooks GetOptions(Guid customerId)
+        public AddressBooks GetAddressBooks(Guid customerId)
         {
             var found = _cache.TryGetValue("AddressBooks", out AddressBooks addressBooks);
             if (found)
@@ -226,6 +226,82 @@ namespace RefactorThis.Controllers
             }
 
             return new AddressBooks(customerId);
+        }
+
+
+        [ResponseCache(Duration = 3600)]
+        [HttpGet("addressbooks")]
+        public AddressBooks GetAllAddressBooks()
+        {
+            var found = _cache.TryGetValue("AddressBooks", out AddressBooks addressBooks);
+            if (found)
+            {
+                return addressBooks;
+            }
+
+            _cache.Set("AddressBooks", new AddressBooks(), new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5)));
+
+            return new AddressBooks();
+        }
+
+        [ResponseCache(Duration = 3600)]
+        [HttpPut("addressbooks")]
+        public IActionResult Update(AddressBook[]  addressBooks)
+        {
+            var rowsAffected = 0;
+            var found = _cache.TryGetValue("AddressBooks", out AddressBooks books);
+            foreach (var addressBook in addressBooks)
+            {
+                var orig = new AddressBook(addressBook.Id)
+                {
+                    CustomerId = addressBook.CustomerId,
+                    Name = addressBook.Name,
+                    PhoneNumber = addressBook.PhoneNumber,
+                    Address = addressBook.Address
+                };
+
+                if (!orig.IsNew)
+                {
+                    try
+                    {
+                        rowsAffected += orig.Save();
+                    }
+                    catch (Exception e)
+                    {
+                        _messageController.LogError("AddressBooks Update", e);
+                        throw;
+                    }
+                }
+                if (found)
+                {
+                    var addressUpdated = books.Address.Find(address => address.Id == addressBook.Id);
+                    if (addressUpdated != null)
+                    {
+                        addressUpdated.Address = addressBook.Address;
+                        addressUpdated.Name = addressBook.Name;
+                        addressUpdated.PhoneNumber = addressBook.PhoneNumber;
+                        addressUpdated.CustomerId = addressBook.CustomerId;
+                        var removed = books.Address.Remove(new AddressBook(addressBook.Id));
+                        if (removed)
+                        {
+                            books.Address.Add(addressUpdated);
+                            _cache.Set("AddressBooks", books, new MemoryCacheEntryOptions()
+                                .SetSlidingExpiration(TimeSpan.FromMinutes(5)));
+                        }
+                    }
+                }
+            }
+
+            if (rowsAffected > 0)
+            {
+                return Ok($"{addressBooks.Length} AddressBooks have been Updated.");
+            }
+            else
+            {
+                return Problem($"Try to update {addressBooks.Length} AddressBooks, but failed");
+            }
+            
         }
     }
 }
