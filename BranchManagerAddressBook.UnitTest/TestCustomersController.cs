@@ -30,7 +30,7 @@ namespace BranchManagerAddressBook.UnitTest
             }
             catch (Exception e)
             {
-                Assert.Fail("[Product Save] Expected no exception, but got: " + e.Message);
+                Assert.Fail("[Customer Save] Expected no exception, but got: " + e.Message);
                 throw;
             }
 
@@ -39,6 +39,51 @@ namespace BranchManagerAddressBook.UnitTest
             Assert.AreEqual(customer.Name, customerFetch.Name);
             Assert.AreEqual(customer.PhoneNumber, customerFetch.PhoneNumber);
             Assert.AreNotEqual(customer.IsNew, customerFetch.IsNew);
+        }
+        
+        [TestMethod]
+        public void TestUpdate()
+        {
+            var customer = GetNewCustomer();
+            try
+            {
+                customer.Save();
+                const int updatedPhoneNumber = 0499999999;
+                var customerNew = new Customer(customer.Id)
+                {
+                    PhoneNumber = updatedPhoneNumber
+                };
+                var rowsAffected = customerNew.Save();
+                Assert.AreEqual(rowsAffected, 1);
+                var productCheck = new Customer(customerNew.Id);
+                Assert.AreNotEqual(customer.PhoneNumber, productCheck.PhoneNumber);
+                Assert.AreEqual(customer.Id, productCheck.Id);
+                Assert.AreEqual(customer.Name, productCheck.Name);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("[Customer Update] Expected no exception, but got: " + e.Message);
+                throw;
+            }
+
+            var productFetch = new Customer(customer.Id);
+        }
+
+        [TestMethod]
+        public void TestDelete()
+        {
+            try
+            {
+                var customer = GetNewCustomer();
+                customer.Save();
+                var rowsAffected = customer.Delete();
+                Assert.AreEqual(rowsAffected, 1);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("[Customer Delete] Expected no exception, but got: " + e.Message);
+                throw;
+            }
         }
     }
 }

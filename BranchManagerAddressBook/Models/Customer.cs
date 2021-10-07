@@ -25,7 +25,7 @@ namespace BranchManagerAddressBook.Models
             using var cmd = conn.CreateCommand();
             try
             {
-                cmd.CommandText = $"select * from Customer where id = @id collate nocase";
+                cmd.CommandText = $"select * from Customer where id = @Id collate nocase";
                 
                 cmd.Parameters.Add(new SqliteParameter()
                 {
